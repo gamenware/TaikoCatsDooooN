@@ -48,7 +48,7 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     - name: Build
-      run: dotnet publish TJAPlayer3-f -o publish -r ${{ matrix.config.platform }} -p:MyOption=PUBLISH -p:PublishSingleFile=true --configuration Release --self-contained true
+      run: dotnet publish gamenyoi -o publish -r ${{ matrix.config.platform }} -p:MyOption=PUBLISH -p:PublishSingleFile=true --configuration Release --self-contained true
 
     - name: Remove Folder
       run: |
@@ -65,35 +65,35 @@ jobs:
       if: ${{ matrix.config.os-platform == 'linux' }}
       run: |
         cd ${{ github.workspace }}
-        mv "publish/TJAPlayer3-f" "publish/TJAPlayer3-f.AppImage"
+        mv "publish/gamenyoi" "publish/gamenyoi.AppImage"
 
     #Pre
     - name: Create Archive(Pre)
       if: (startsWith(github.ref, 'refs/tags/Ver')) != true
       run: |
         cd ${{ github.workspace }}
-        zip "TJAPlayer3-f-PreRelease-${{ matrix.config.platform }}-${{ needs.get_rev_list_count.outputs.rev_list_count }}" -r publish
+        zip "gamenyoi-PreRelease-${{ matrix.config.platform }}-${{ needs.get_rev_list_count.outputs.rev_list_count }}" -r publish
 
     - name: Upload Artifact(Pre)
       if: (startsWith(github.ref, 'refs/tags/Ver')) != true
       uses: actions/upload-artifact@v3
       with:
-        name: TJAPlayer3-f
-        path: ${{ github.workspace }}/TJAPlayer3-f-PreRelease-${{ matrix.config.platform }}-${{ needs.get_rev_list_count.outputs.rev_list_count }}.zip
+        name: gamenyoi
+        path: ${{ github.workspace }}/gamenyoi-PreRelease-${{ matrix.config.platform }}-${{ needs.get_rev_list_count.outputs.rev_list_count }}.zip
 
     #Release
     - name: Create Archive
       if: (startsWith(github.ref, 'refs/tags/Ver'))
       run: |
         cd ${{ github.workspace }}
-        zip "TJAPlayer3-f-${{ matrix.config.platform }}" -r publish
+        zip "gamenyoi-${{ matrix.config.platform }}" -r publish
 
     - name: Upload Artifact
       if: (startsWith(github.ref, 'refs/tags/Ver'))
       uses: actions/upload-artifact@v3
       with:
-        name: TJAPlayer3-f
-        path: ${{ github.workspace }}/TJAPlayer3-f-${{ matrix.config.os-platform }}.zip
+        name: gamenyoi
+        path: ${{ github.workspace }}/gamenyoi-${{ matrix.config.os-platform }}.zip
 
 
   create_release:
@@ -108,7 +108,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v3
       with:
-        name: TJAPlayer3-f
+        name: gamenyoi
         path: artifacts
 
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746
@@ -118,7 +118,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd ${{ github.workspace }}/artifacts
-        RELEASE_NAME=TJAPlayer3-f-prerelease-${{ needs.get_rev_list_count.outputs.rev_list_count }}
+        RELEASE_NAME=gamenyoi-prerelease-${{ needs.get_rev_list_count.outputs.rev_list_count }}
         TAG_NAME=prerelease-${{ needs.get_rev_list_count.outputs.rev_list_count }}
         gh release create "${TAG_NAME}" ${{ github.workspace }}/artifacts/*.zip -t "${RELEASE_NAME}" -p
 
@@ -132,4 +132,3 @@ jobs:
         RELEASE_NAME=${VERSION}
         TAG_NAME=${VERSION}
         gh release create "${TAG_NAME}" ${{ github.workspace }}/artifacts/*.zip -t "${RELEASE_NAME}"
-
