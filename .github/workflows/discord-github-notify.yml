@@ -81,4 +81,8 @@ jobs:
       env:
         DISCORD_WEBHOOK_GITHUB: ${{ secrets.DISCORD_WEBHOOK_GITHUB }}
         DISCORD_PAYLOAD: ${{ steps.payload.outputs.json }}
-      run: curl -H "Content-Type: application/json" -d "$DISCORD_PAYLOAD" "$DISCORD_WEBHOOK_GITHUB"
+      run: |
+        curl \
+          -H "Content-Type: application/json" \
+          -d "$DISCORD_PAYLOAD" \
+          "$DISCORD_WEBHOOK_GITHUB"
